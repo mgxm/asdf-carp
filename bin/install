@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+trap cleanup SIGINT SIGTERM ERR
+
+cleanup() {
+  trap - SIGINT SIGTERM ERR
+  rm -rf "$ASDF_INSTALL_PATH"
+  echo
+  echo -e "\e[33mCleanup:\e[m Something went wrong!"
+  echo
+  echo "$(caller): ${BASH_COMMAND}"
+}
+
+fail() {
+  echo -e "\e[31mFail:\e[m $*"
+  exit 1
+}
+
+install_carp() {
+  local version=$2
+  local install_path=$3
+  local platform
+
+  case "$OSTYPE" in
+    darwin*) platform="darwin" ;;
+    linux*) platform="linux" ;;
+    *) fail "Unsipported platform" ;;
+  esac
+
+  local architecture
+
+  case "$(uname -m)" in
+    x86_64*) architecture="x86_64" ;;
+    *) fail "Unsupported architecture" ;;
+  esac
+
+  local file_name="carp-v${version}-${architecture}-${platform}"
+  local download_url="https://github.com/carp-lang/Carp/releases/download/v${version}/${file_name}.zip"
+  local download_path="${install_path}/carp.zip"
+
+  echo "*** Downloading and installing Carp ***"
+
+  curl --fail --silent --location --create-dirs --output "$download_path" "$download_url"
+  unzip -qq "$download_path" -d "${install_path}" || fail "Could not extract $download_path"
+
+  mv "${install_path}/${file_name}/"* "${install_path}"
+
+  rm "$download_path"
+  rm -rf "$file_name"
+
+  echo "*** The installation was successful! ***"
+}
+
+install_carp "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"

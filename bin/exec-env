@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+if [ "$CARP_DIR" = "" ]; then
+  export CARP_DIR="$ASDF_INSTALL_PATH"
+fi
