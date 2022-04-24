@@ -8,7 +8,7 @@ cleanup() {
   trap - SIGINT SIGTERM ERR
   rm -rf "$ASDF_INSTALL_PATH"
   echo
-  echo -e "\e[33mCleanup:\e[m Something went wrong!"
+  echo -e "Cleanup: Something went wrong!"
   echo
   echo "$(caller): ${BASH_COMMAND}"
 }
@@ -24,7 +24,7 @@ install_carp() {
   local platform
 
   case "$OSTYPE" in
-    darwin*) platform="darwin" ;;
+    darwin*) platform="macos" ;;
     linux*) platform="linux" ;;
     *) fail "Unsipported platform" ;;
   esac
